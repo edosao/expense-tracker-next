@@ -1,0 +1,35 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Category {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Expense {
+  id        Int      @id @default(autoincrement())
+  title     String
+  amount    Decimal
+  category  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  notes     Note[]
+}
+
+model Note {
+  id        Int      @id @default(autoincrement())
+  content   String
+  expenseId Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  expense   Expense  @relation(fields: [expenseId], references: [id], onDelete: Cascade)
+}

@@ -27,9 +27,29 @@ export async function DELETE(
 ) {
   try {
     const { id } = await params;
+
+    // find the category name first
+    const category = await prisma.category.findUnique({
+      where: { id: Number(id) },
+    });
+
+    if (!category) {
+      return NextResponse.json(
+        { error: "Category not found" },
+        { status: 404 },
+      );
+    }
+
+    // move all expenses in this category to "other"
+    await prisma.expense.updateMany({
+      where: { category: category.name },
+      data: { category: "other" },
+    });
+
     await prisma.category.delete({
       where: { id: Number(id) },
     });
+
     return NextResponse.json({ message: "Category deleted" });
   } catch (error) {
     return NextResponse.json(

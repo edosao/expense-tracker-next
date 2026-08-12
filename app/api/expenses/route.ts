@@ -7,7 +7,14 @@ export async function GET() {
       include: { notes: true },
       orderBy: { createdAt: "desc" },
     });
-    return NextResponse.json(expenses);
+
+    //Convert Decimal to number
+    const transformed = expenses.map((exp) => ({
+      ...exp,
+      amount: Number(exp.amount),
+    }));
+
+    return NextResponse.json(transformed);
   } catch (error) {
     console.error("Error fetching expenses:", error);
     const message =
@@ -32,7 +39,12 @@ export async function POST(request: Request) {
       include: { notes: true },
     });
 
-    return NextResponse.json(expense, { status: 201 });
+    const transformed = {
+      ...expense,
+      amount: Number(expense.amount),
+    };
+
+    return NextResponse.json(transformed, { status: 201 });
   } catch (error) {
     console.error("Error creating expense:", error);
     const message =

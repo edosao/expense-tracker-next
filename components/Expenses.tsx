@@ -96,9 +96,6 @@ export default function Expenses({
 
   const sortedExpenses = getSortedExpenses();
 
-  console.log("sortedExpenses", sortedExpenses);
-  console.log("filteredExpenses", filteredExpenses);
-
   return (
     <div className="space-y-4">
       <div className="space-y-3 border-b border-muted pb-4">

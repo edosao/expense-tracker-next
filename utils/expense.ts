@@ -8,11 +8,11 @@ export function getTotalByCategory(
 ): number {
   return expenses
     .filter((expense) => expense.category === category)
-    .reduce((sum, expense) => sum + Number(expense.amount), 0);
+    .reduce((sum, expense) => sum + expense.amount, 0);
 }
 
 export function getTotalExpenses(expenses: Expense[]): number {
-  return expenses.reduce((sum, e) => sum + Number(e.amount), 0);
+  return expenses.reduce((sum, e) => sum + e.amount, 0);
 }
 
 export const fetchExpensesFromLocalStorage = () => {

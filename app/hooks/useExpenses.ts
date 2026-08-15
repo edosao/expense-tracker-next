@@ -12,7 +12,13 @@ export function useExpenses() {
         const res = await fetch("/api/expenses");
         if (!res.ok) throw new Error();
         const data = await res.json();
-        setExpenses(data.map((e: Expense) => ({ ...e, notes: e.notes ?? [] })));
+        setExpenses(
+          data.map((e: Expense) => ({
+            ...e,
+            notes: e.notes ?? [],
+            createdAt: new Date(e.createdAt).getTime(),
+          })),
+        );
       } catch {
         toast.error("Failed to load expenses");
       } finally {
@@ -38,7 +44,11 @@ export function useExpenses() {
       if (!res.ok) throw new Error();
       const created = await res.json();
       setExpenses((prev) => [
-        { ...created, notes: created.notes ?? [] },
+        {
+          ...created,
+          notes: created.notes ?? [],
+          createdAt: new Date(created.createdAt).getTime(),
+        },
         ...prev,
       ]);
       toast.success("Expense added!");

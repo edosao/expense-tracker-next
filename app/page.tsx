@@ -11,7 +11,7 @@ import type { ActiveTab } from "../types/expense";
 import { useExpenses } from "./hooks/useExpenses";
 import { useCategories } from "./hooks/useCategories";
 import { useFilters } from "./hooks/useFilters";
-import { getTotalByCategory } from "../utils/expense";
+import { getChartData } from "../utils/chart";
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<ActiveTab>("expenses");
@@ -41,10 +41,7 @@ export default function App() {
     toggleCategory,
   } = useFilters(expenses);
 
-  const chartData = categories.map((category) => ({
-    category,
-    amount: getTotalByCategory(summaryExpenses, category),
-  }));
+  const chartData = getChartData(summaryExpenses, categories);
 
   if (isLoading) {
     return (

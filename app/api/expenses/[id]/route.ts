@@ -40,6 +40,10 @@ export async function PATCH(
         title: body.title,
         amount: body.amount,
         category: body.category,
+        notes: {
+          deleteMany: {},
+          create: body.notes?.map((content: string) => ({ content })) || [],
+        },
       },
       include: { notes: true },
     });

@@ -107,7 +107,7 @@ export default function Expenses({
               variant="outline"
               className="h-8 w-10"
               title="Export to CSV"
-              onClick={() => exportToCSV(filteredExpenses)}
+              onClick={exportToCSV}
               disabled={filteredExpenses.length === 0}
             >
               <Download className="h-4 w-4" />

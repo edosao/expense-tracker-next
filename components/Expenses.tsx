@@ -12,7 +12,7 @@ import {
   DropdownMenuCheckboxItem,
 } from "@/components/ui/dropdown-menu";
 import { SlidersHorizontal, ArrowUpDown, Download } from "lucide-react";
-import { exportToCSV } from "@/utils/expense";
+import { exportToCSV, toDateTime } from "@/utils/expense";
 
 type ExpensesProps = {
   expenses: ExpenseType[];
@@ -63,9 +63,13 @@ export default function Expenses({
   const sortOptions = ["Newest", "Oldest", "Highest-amount", "Lowest-amount"];
 
   const sortByNewest = () =>
-    [...filteredExpenses].sort((a, b) => b.createdAt - a.createdAt);
+    [...filteredExpenses].sort(
+      (a, b) => toDateTime(b.createdAt) - toDateTime(a.createdAt),
+    );
   const sortByOldest = () =>
-    [...filteredExpenses].sort((a, b) => a.createdAt - b.createdAt);
+    [...filteredExpenses].sort(
+      (a, b) => toDateTime(a.createdAt) - toDateTime(b.createdAt),
+    );
   const sortByHighestAmount = () =>
     [...filteredExpenses].sort((a, b) => b.amount - a.amount);
   const sortByLowestAmount = () =>

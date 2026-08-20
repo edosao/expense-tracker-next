@@ -16,7 +16,6 @@ export function useExpenses() {
           data.map((e: Expense) => ({
             ...e,
             notes: e.notes ?? [],
-            createdAt: new Date(e.createdAt).getTime(),
           })),
         );
       } catch {
@@ -47,7 +46,6 @@ export function useExpenses() {
         {
           ...created,
           notes: created.notes ?? [],
-          createdAt: new Date(created.createdAt).getTime(),
         },
         ...prev,
       ]);

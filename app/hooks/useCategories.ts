@@ -89,7 +89,8 @@ export function useCategories(
     try {
       const res = await fetch(`/api/categories?name=${category}`);
       if (!res.ok) {
-        toast.error("Failed to find category");
+        const error = await res.json();
+        toast.error(error.error || "Failed to find category");
         return;
       }
 

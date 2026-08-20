@@ -7,10 +7,11 @@ export async function PATCH(
 ) {
   try {
     const { id } = await params;
+    const numericId = Number(id);
     const body = await request.json();
 
     const category = await prisma.category.findUnique({
-      where: { id: Number(id) },
+      where: { id: numericId },
     });
 
     if (!category) {
@@ -20,17 +21,21 @@ export async function PATCH(
       );
     }
 
-    // update all expenses with the old category name to the new name
-    await prisma.expense.updateMany({
-      where: { category: category.name },
-      data: { category: body.name },
-    });
-
-    // then rename the category
+    //rename the category first
     const updated = await prisma.category.update({
-      where: { id: Number(id) },
+      where: { id: numericId },
       data: { name: body.name },
     });
+
+    // update expenses in the background — don't await
+    prisma.expense
+      .updateMany({
+        where: { category: category.name },
+        data: { category: body.name },
+      })
+      .catch((error) => {
+        console.error("Background expense category update failed:", error);
+      });
 
     return NextResponse.json(updated);
   } catch (error) {

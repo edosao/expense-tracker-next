@@ -56,3 +56,7 @@ export const exportToCSV = async () => {
     throw new Error("Failed to export expenses");
   }
 };
+
+export const toDateTime = (createdAt: string | number): number => {
+  return new Date(createdAt).getTime();
+};

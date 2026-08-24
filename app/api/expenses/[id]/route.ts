@@ -26,7 +26,7 @@ export async function GET(
   }
 }
 
-export async function PUT(
+export async function PATCH(
   request: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
@@ -34,65 +34,48 @@ export async function PUT(
     const { id } = await params;
     const body = await request.json();
 
-    // Check if expense exists
-    const existingExpense = await prisma.expense.findUnique({
-      where: { id: Number(id) },
-    });
-
-    if (!existingExpense) {
-      return NextResponse.json({ error: "Expense not found" }, { status: 404 });
-    }
-
-    // Update the expense
     const expense = await prisma.expense.update({
       where: { id: Number(id) },
       data: {
         title: body.title,
         amount: body.amount,
         category: body.category,
-        // Update notes: delete all existing notes and create new ones
         notes: {
-          deleteMany: {}, // Remove all existing notes
+          deleteMany: {},
           create: body.notes?.map((content: string) => ({ content })) || [],
         },
       },
       include: { notes: true },
     });
 
-    return NextResponse.json(expense);
+    const transformed = {
+      ...expense,
+      amount: Number(expense.amount),
+    };
+
+    return NextResponse.json(transformed);
   } catch (error) {
-    console.error("Error updating expense:", error);
-    const message =
-      error instanceof Error ? error.message : "Failed to update expense";
-    return NextResponse.json({ error: message }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to update expense" },
+      { status: 500 },
+    );
   }
 }
 
 export async function DELETE(
-  request: Request,
+  _request: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { id } = await params;
-
-    // Check if expense exists
-    const existingExpense = await prisma.expense.findUnique({
-      where: { id: Number(id) },
-    });
-
-    if (!existingExpense) {
-      return NextResponse.json({ error: "Expense not found" }, { status: 404 });
-    }
-
     await prisma.expense.delete({
       where: { id: Number(id) },
     });
-
-    return NextResponse.json({ message: "Expense deleted successfully" });
+    return NextResponse.json({ message: "Expense deleted" });
   } catch (error) {
-    console.error("Error deleting expense:", error);
-    const message =
-      error instanceof Error ? error.message : "Failed to delete expense";
-    return NextResponse.json({ error: message }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to delete expense" },
+      { status: 500 },
+    );
   }
 }

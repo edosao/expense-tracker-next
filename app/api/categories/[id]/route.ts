@@ -7,12 +7,37 @@ export async function PATCH(
 ) {
   try {
     const { id } = await params;
+    const numericId = Number(id);
     const body = await request.json();
-    const category = await prisma.category.update({
-      where: { id: Number(id) },
+
+    const category = await prisma.category.findUnique({
+      where: { id: numericId },
+    });
+
+    if (!category) {
+      return NextResponse.json(
+        { error: "Category not found" },
+        { status: 404 },
+      );
+    }
+
+    //rename the category first
+    const updated = await prisma.category.update({
+      where: { id: numericId },
       data: { name: body.name },
     });
-    return NextResponse.json(category);
+
+    // update expenses in the background — don't await
+    prisma.expense
+      .updateMany({
+        where: { category: category.name },
+        data: { category: body.name },
+      })
+      .catch((error) => {
+        console.error("Background expense category update failed:", error);
+      });
+
+    return NextResponse.json(updated);
   } catch (error) {
     return NextResponse.json(
       { error: "Failed to update category" },
@@ -27,9 +52,29 @@ export async function DELETE(
 ) {
   try {
     const { id } = await params;
+
+    // find the category name first
+    const category = await prisma.category.findUnique({
+      where: { id: Number(id) },
+    });
+
+    if (!category) {
+      return NextResponse.json(
+        { error: "Category not found" },
+        { status: 404 },
+      );
+    }
+
+    // move all expenses in this category to "other"
+    await prisma.expense.updateMany({
+      where: { category: category.name },
+      data: { category: "other" },
+    });
+
     await prisma.category.delete({
       where: { id: Number(id) },
     });
+
     return NextResponse.json({ message: "Category deleted" });
   } catch (error) {
     return NextResponse.json(

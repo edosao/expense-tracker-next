@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
+import type { Expense } from "@prisma/client";
 
 export async function GET() {
   try {
@@ -9,7 +10,7 @@ export async function GET() {
     });
 
     //Convert Decimal to number
-    const transformed = expenses.map((exp) => ({
+    const transformed = expenses.map((exp: Expense & { notes: any[] }) => ({
       ...exp,
       amount: Number(exp.amount),
     }));

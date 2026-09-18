@@ -33,7 +33,7 @@ export async function PATCH(
         where: { category: category.name },
         data: { category: body.name },
       })
-      .catch((error) => {
+      .catch((error: unknown) => {
         console.error("Background expense category update failed:", error);
       });
 
